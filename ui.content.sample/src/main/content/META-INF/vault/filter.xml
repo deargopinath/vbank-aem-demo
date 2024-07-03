@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<workspaceFilter version="1.0">
+
+    <!-- Content Filters -->
+    <filter root="/content/vbank" />
+    <!-- Changing the filter mode to merge will preserve any existing content on the target environment
+    <filter root="/content/vbank" mode="merge"/>
+    -->
+    <filter root="/content/dam/vbank" mode="update"/>
+    <filter root="/content/experience-fragments/vbank"/>
+
+    <!-- Force Policy and Template Updates -->
+    <filter root="/conf/vbank/settings/wcm" />
+    <filter root="/conf/vbank/settings/cloudconfigs" mode="merge" />
+    <filter root="/conf/vbank/settings/cloudsettings" mode="merge" />
+
+    <!-- VBANK Member Group-->
+    <filter root="/home/groups/vbank" mode="merge" />
+    <!-- Sample User-->
+    <filter root="/home/users/vbank" />
+</workspaceFilter>
