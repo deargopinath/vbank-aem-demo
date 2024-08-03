@@ -26,7 +26,6 @@
     <build>
         <sourceDirectory>src/main/content/jcr_root</sourceDirectory>
         <plugins>
-            <!--
             <plugin>
                 <groupId>com.github.eirslett</groupId>
                 <artifactId>frontend-maven-plugin</artifactId>
@@ -43,7 +42,6 @@
                     </execution>
                 </executions>
             </plugin>
-            -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-assembly-plugin</artifactId>

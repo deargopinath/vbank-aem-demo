@@ -50,6 +50,7 @@
         <aemanalyser.version>1.5.8</aemanalyser.version>
         <skip.installyarn>true</skip.installyarn>
         <skip.installnodenpm>true</skip.installnodenpm>
+        <skip.npm>true</skip.npm>
     </properties>
 
     <organization>
@@ -161,6 +162,7 @@
                     <configuration>
                         <nodeVersion>v20.14.0</nodeVersion>
                         <npmVersion>10.8.1</npmVersion>
+                        <skip.installnodenpm>true</skip.installnodenpm>
                     </configuration>
                     <executions>
                         <execution>
