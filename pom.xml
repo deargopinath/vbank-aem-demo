@@ -48,8 +48,6 @@
         <vbank-shared.version>3.1.0</vbank-shared.version>
         <vbank-shared.65.version>2.2.2</vbank-shared.65.version>
         <aemanalyser.version>1.5.8</aemanalyser.version>
-        <skip.installyarn>true</skip.installyarn>
-        <skip.installnodenpm>true</skip.installnodenpm>
         <skip.npm>true</skip.npm>
     </properties>
 
@@ -162,7 +160,6 @@
                     <configuration>
                         <nodeVersion>v20.14.0</nodeVersion>
                         <npmVersion>10.8.1</npmVersion>
-                        <skip.installnodenpm>true</skip.installnodenpm>
                     </configuration>
                     <executions>
                         <execution>

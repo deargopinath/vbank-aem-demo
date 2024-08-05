@@ -7,5 +7,5 @@
     cq:conf="/conf/vbank"
     sling:configRef="/conf/vbank">
     <language-masters/>
-    <us/>
+    <gb/>
 </jcr:root>
