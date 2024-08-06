@@ -1,0 +1,202 @@
+<div>
+
+<style>
+.column-left {
+  flex: 30%;
+  max-width: 180px;
+}
+
+.column-right {
+  flex: 70%;
+}
+
+.row {
+  display: flex;
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+
+.output-log {
+  height: 200px;
+  border: 1px solid #ccc;
+  padding: 10px;
+  overflow-y: auto;
+  white-space: pre-wrap;
+  width: 100%;
+  resize: none;
+}
+
+.btn-submit {
+    display: inline-block;
+    font-weight: 400;
+    color: #fff;
+    text-align: center;
+    vertical-align: middle;
+    cursor: pointer;
+    background-color: #007bff;
+    border: 1px solid #007bff;
+    padding: 0.375rem 0.75rem;
+    font-size: 1rem;
+    line-height: 1.5;
+    border-radius: 0.25rem;
+    transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.btn-submit:hover {
+    color: #fff;
+    background-color: #0056b3;
+    border-color: #004085;
+}
+
+.btn-submit:focus {
+    color: #fff;
+    background-color: #0056b3;
+    border-color: #004085;
+    box-shadow: 0 0 0 0.2rem rgba(38, 143, 255, 0.5);
+}
+
+.btn-submit:active {
+    color: #fff;
+    background-color: #004085;
+    border-color: #003366;
+}
+
+
+</style>
+
+
+
+
+<h2 class="cmp-helloworld__title">Upload an e-mail template to Hermes</h2>
+
+<div data-sly-test="${properties.uploadLink && properties.template && properties.brandUrl}">
+<div class="row">
+  <div class="column-left">Upload Link:</div>
+  <div class="column-right"id="uploadLink">${properties.uploadLink}</div>
+</div>
+
+<div class="row">
+  <div class="column-left">Email template:</div>
+  <div class="column-right"id="emailTemplate">${properties.template}</div>
+</div>
+
+<div class="row">
+  <div class="column-left">Brand URL:</div>
+  <div class="column-right"id="brandUrl">${properties.brandUrl}</div>
+</div>
+
+<div class="row">
+  <div class="column-left"></div>
+  <div class="column-right">
+      <button class="btn-submit" id="submitButton" onclick="uploadEmailTemplate()">Upload</button>
+  </div>
+</div>
+
+
+<div class="row">
+    <div class="column-left">
+        <label for="outputLog">Log:</label>
+    </div>
+    <div class="column-right">
+        <textarea id="outputLog" cols="80" rows="10">Log messages</textarea>
+    </div>
+</div>
+
+</div>
+
+
+<script>
+    function uploadEmailTemplate() {
+        let emailTemplate = document.getElementById('emailTemplate').innerText + '.nocloudconfigs.html';
+        let outputLog = document.getElementById('outputLog');
+        const API_URL = document.getElementById('uploadLink').innerText;
+        const BRAND_URL = document.getElementById('brandUrl').innerText;
+
+            // Extract the e-mail template
+            outputLog.value = 'Extracting the e-mail template content .........'
+            fetch(emailTemplate)
+                .then(response => response.text())
+                .then(data => {
+                    outputLog.value += '[Success]\n';
+
+
+                    // Parse the fetched HTML data
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(data, 'text/html');
+                    const head = doc.head;
+                    const body = doc.body;
+                    const title = doc.querySelector('title') ? doc.querySelector('title').innerText : 'No title found';
+
+                    // Remove scripts
+                    outputLog.value += 'Removing scripts from the template .............'
+                    const scripts = body.querySelectorAll('script');
+                    scripts.forEach(script => script.remove());
+
+                    const headScripts = head.querySelectorAll('script');
+                    headScripts.forEach(script => script.remove());
+                    outputLog.value += '[Success]\n';
+
+
+                    // Remove comments
+                    outputLog.value += 'Removing comments from the template ............';
+                    const removeComments = node => {
+                        for (let i = 0; i < node.childNodes.length; i++) {
+                            const child = node.childNodes[i];
+                            if (child.nodeType === Node.COMMENT_NODE) {
+                                node.removeChild(child);
+                                i--;
+                            } else if (child.nodeType === Node.ELEMENT_NODE) {
+                                removeComments(child);
+                            }
+                        }
+                    };
+                    removeComments(head);
+                    removeComments(body);
+                    outputLog.value += '[Success]\n';
+
+
+                    // Prepend base URL to relative stylesheet links
+                    outputLog.value += 'Prefixing Brand URL to CSS links ...............';
+
+                    const links = head.querySelectorAll('link[rel="stylesheet"]');
+                    links.forEach(link => {
+                        const href = link.getAttribute('href');
+                        if (href && !href.startsWith('http') && !href.startsWith('https')) {
+                            link.setAttribute('href', BRAND_URL + href);
+                        }
+                    });
+                    outputLog.value += '[Success]\n';
+
+
+                    // Pack the content for upload
+                    const modifiedHTML = '<!DOCTYPE html>\n<html>\n' + head.outerHTML + '\n' + body.outerHTML + '\n</html>';
+
+                    // Log message
+                    console.clear()
+                    console.log("data = \n", modifiedHTML)
+
+
+                    // Upload to Hermes
+                    outputLog.value += 'Uploading to ' + API_URL + '.......';
+                    return fetch(API_URL, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ content: modifiedHTML, title: title })
+                    });
+                })
+                .then(response => {
+                    if (response.ok) {
+                        outputLog.value += '[Success]\n';
+                    } else {
+                        outputLog.value += '[Failure]\n';
+                    }
+                })
+                .catch(error => {
+                    // Log message
+                    outputLog.value += 'Error: ' + error.message + '\n';
+                });
+        }
+</script>
+</div>
